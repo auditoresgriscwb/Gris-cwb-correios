@@ -264,7 +264,7 @@
   (function headerInit(){
     const elDate = document.getElementById('currentDate');
     try{ elDate.textContent = new Date().toLocaleDateString('pt-BR'); }catch(e){ elDate.textContent='--/--/----'; }
-    const img = document.getElementById('logoTotal');
+    const img = document.getElementById('total-express-logo.png');
     const btnLogo = document.getElementById('btnSetLogo');
     const file = document.getElementById('fileLogo');
     try{ const stored = localStorage.getItem('aud_header_logo_dataurl'); if(stored){ img.src = stored; } }catch(e){}
@@ -521,5 +521,6 @@
 </body>
 
 </html>
+
 
 
