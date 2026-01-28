@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Auditoria dos Correios</title>
   <style>
-    /* ======= Tema ICS / Total (apenas formatação visual) ======= */
+    /* ======= Tema ======= */
     :root{
       --brand-red:#C6322A;
       --brand-red-2:#D94C43;
@@ -23,9 +23,7 @@
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Arial, Helvetica, sans-serif}
     a{color:var(--link)}
-
     .container{max-width:var(--maxw);margin:0 auto;padding:12px}
-
     /* Header */
     header{background:var(--brand-red);color:#fff;border-bottom:2px solid var(--brand-red-2);border-radius:6px;padding:10px 14px}
     .header-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
@@ -35,62 +33,54 @@
     .title-wrap .date{margin-top:2px;font-size:12px;color:#fff;opacity:.9;letter-spacing:.02em}
     .logo-right{justify-self:end;display:flex;align-items:center;gap:6px}
     .logo-right img{display:block;height:36px;width:auto}
-
     .tabs{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
     .tab-btn{background:transparent;border:none;color:#fff;padding:6px 8px;border-radius:0;cursor:pointer;font-weight:600}
     .tab-btn:hover,.tab-btn.active{text-decoration:underline}
-
-    /* Busca global no topo */
+    /* Busca */
     .search{margin-left:auto;display:flex;gap:6px;align-items:center}
     .search input{background:#fff;border:1px solid var(--border);border-radius:4px;padding:8px 10px;min-width:260px;color:var(--text)}
-
-    /* Botões genéricos */
+    /* Botões */
     .btn{background:#fff;border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:4px;cursor:pointer}
     .btn.primary{border-color:var(--brand-red);color:var(--brand-red)}
     .btn.primary:hover{background:#fff5f4}
     .btn.success{border-color:#2E7D32;color:#2E7D32}
     .btn.warn{border-color:var(--warn);color:#A0760B}
     .btn.danger{border-color:#8B0000;color:#8B0000}
-
+    .btn.small{padding:4px 8px;font-size:12px}
     /* Painéis / Cards */
     .panel{background:var(--panel);border:1px solid var(--border);border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.04);padding:16px;margin-top:14px}
     .card{background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.04);padding:12px}
-
     .grid{display:grid;gap:12px}
     .grid-2{grid-template-columns:1fr 1fr}
     .grid-3{grid-template-columns:repeat(3,1fr)}
-
     /* Inputs */
     label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
     input, select, textarea{background:#fff;color:var(--text);border:1px solid #C0C0C0;border-radius:4px;padding:8px 10px}
     input:focus, select:focus, textarea:focus{outline:2px solid rgba(198,50,42,.15);border-color:var(--brand-red)}
     textarea{min-height:120px}
-
     /* Tabelas */
     table{width:100%;border-collapse:collapse}
     th,td{padding:9px 8px;border-bottom:1px solid var(--border)}
     th{background:#FAFAFA;color:#333;position:sticky;top:0;border-bottom:2px solid var(--brand-red-2);z-index:2}
     tbody tr:nth-child(odd){background:#FBFBFB}
-
     .muted{color:var(--muted)}
     .kpi{font-size:22px;font-weight:700}
-
-    /* Badges discretas */
+    /* Badges */
     .badge{display:inline-block;padding:2px 8px;border-radius:16px;font-size:12px;font-weight:600;background:#fff}
     .badge.ok{border:1px solid var(--ok);color:var(--ok)}
     .badge.err{border:1px solid var(--brand-red);color:var(--brand-red)}
     .badge.dup,.badge.miss{border:1px solid var(--warn);color:#A0760B}
-
     .hidden{display:none}
     .footer{margin-top:24px;color:var(--muted);font-size:12px}
-
-    /* Ajustes responsivos */
+    /* Responsivo */
     @media(max-width:900px){
       .header-row{grid-template-columns:1fr 1fr}
       .logo-left{order:1}
       .logo-right{order:3}
       .title-wrap{order:2;grid-column:1/3}
       .search input{min-width:160px}
+      .grid-2{grid-template-columns:1fr}
+      .grid-3{grid-template-columns:1fr}
     }
   </style>
   <!-- Biblioteca Excel -->
@@ -98,7 +88,7 @@
 </head>
 <body>
   <div class="container">
-    <!-- ====== CABEÇALHO NOVO (visual) ====== -->
+    <!-- ====== CABEÇALHO ====== -->
     <header>
       <div class="header-row">
         <div class="logo-left">GRIS – CWB</div>
@@ -106,7 +96,12 @@
           <h1>AUDITORIA DOS CORREIOS</h1>
           <div class="date" id="currentDate">--/--/----</div>
         </div>
-        
+        <div class="logo-right">
+          <!-- Elementos ocultos para compatibilidade com headerInit -->
+          <img id="total-express-logo.png" alt="" style="display:none"/>
+          <button id="btnSetLogo" class="btn small" style="display:none">Logo</button>
+          <input id="fileLogo" type="file" accept="image/*" class="hidden"/>
+        </div>
       </div>
       <div class="tabs">
         <button class="tab-btn active" data-tab="cadastro">Cadastro</button>
@@ -121,9 +116,7 @@
       </div>
     </header>
 
-    <!-- ====== CONTEÚDO FUNCIONAL / LÓGICA ORIGINAL (v3) ====== -->
-
-    <!-- CADASTRO -->
+    <!-- ====== CADASTRO ====== -->
     <section id="cadastro" class="panel">
       <div class="grid grid-2">
         <div class="card">
@@ -151,7 +144,7 @@
       </div>
     </section>
 
-    <!-- AUDITORIA -->
+    <!-- ====== AUDITORIA ====== -->
     <section id="auditoria" class="panel hidden">
       <div class="grid grid-2">
         <div class="card">
@@ -187,7 +180,7 @@
       </div>
     </section>
 
-    <!-- DIVERGÊNCIAS -->
+    <!-- ====== DIVERGÊNCIAS ====== -->
     <section id="divergencias" class="panel hidden">
       <div class="grid grid-3">
         <div class="card">
@@ -215,7 +208,7 @@
       </div>
     </section>
 
-    <!-- RELATÓRIO -->
+    <!-- ====== RELATÓRIO ====== -->
     <section id="relatorio" class="panel hidden">
       <div class="grid grid-3">
         <div class="card"><div class="muted">Total Esperados</div><div class="kpi" id="kEsperados">0</div></div>
@@ -225,15 +218,66 @@
       <div class="footer">Dados salvos automaticamente no navegador (localStorage). Para importar/exportar Excel (.xlsx), é necessário acesso ao CDN da biblioteca.</div>
     </section>
 
-    <!-- CONFIGURAÇÕES -->
+    <!-- ====== CONFIGURAÇÕES ====== -->
     <section id="config" class="panel hidden">
+      <!-- Novo: Catálogo de Auditorias (projetos locais) -->
+      <div class="card">
+        <h3>Auditorias (projetos locais)</h3>
+        <div class="grid grid-3">
+          <div>
+            <label>Nome da auditoria</label>
+            <input id="projName" placeholder="Ex.: Auditoria 2026-01 Lote A"/>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="btn primary" id="btnSaveProj">Salvar auditoria</button>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="btn" id="btnNewProj">Nova auditoria</button>
+          </div>
+        </div>
+
+        <div style="margin-top:8px" class="grid grid-3">
+          <div>
+            <label>Auditorias salvas</label>
+            <select id="projList"></select>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="btn success" id="btnLoadProj">Abrir auditoria</button>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="btn danger" id="btnDeleteProj">Excluir auditoria</button>
+          </div>
+        </div>
+
+        <div style="margin-top:8px" class="grid grid-3">
+          <div>
+            <label>&nbsp;</label>
+            <button class="btn" id="btnExportProj">Exportar (.json)</button>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <label class="btn">Importar (.json)
+              <input id="fileImportProj" type="file" accept=".json" class="hidden">
+            </label>
+          </div>
+        </div>
+
+        <p class="help">
+          Use diferentes nomes para manter auditorias separadas (ex.: “Auditoria 1”, “Auditoria 2”). Os dados ficam somente neste navegador/dispositivo.
+        </p>
+      </div>
+
       <div class="grid grid-2">
         <div class="card">
           <h3>Validação de código</h3>
           <div class="grid grid-3">
             <div><label>Mín. caracteres</label><input id="minLen" type="number" min="0" value="0"/></div>
             <div><label>Máx. caracteres</label><input id="maxLen" type="number" min="0" value="0"/></div>
-            <div><label>Regex opcional</label><input id="regex" placeholder="^\\d{13}$ (ex: EAN-13)"/></div>
+            <div><label>Regex opcional</label><input id="regex" placeholder="^\\\d{13}$ (ex: EAN-13)"/></div>
           </div>
           <div style="margin-top:8px">
             <label><input type="checkbox" id="chkExtractECT"/> Extrair automaticamente <strong>código ECT (S10)</strong> de strings longas (ex.: pega <code>AB883831875BR</code> de dentro do texto bipado)</label><br/>
@@ -253,23 +297,26 @@
       </div>
     </section>
 
-    <div class="footer">Este arquivo aplica apenas alterações de <strong>formatação</strong> e mantém 100% das <strong>funções</strong> da versão v3.</div>
+    <div class="footer">Este arquivo aplica alterações de <strong>formatação</strong> e adiciona <strong>múltiplas auditorias locais</strong>, mantendo as funções da versão v3.</div>
   </div>
 
 <script>
 (function(){
   const hasXLSX = typeof XLSX !== 'undefined';
 
-  // ===== Header: data do dia e logo dinâmico (apresentação) =====
+  // ===== Header: data do dia e logo (compat) =====
   (function headerInit(){
     const elDate = document.getElementById('currentDate');
     try{ elDate.textContent = new Date().toLocaleDateString('pt-BR'); }catch(e){ elDate.textContent='--/--/----'; }
+    // Compat com elementos ocultos
     const img = document.getElementById('total-express-logo.png');
     const btnLogo = document.getElementById('btnSetLogo');
     const file = document.getElementById('fileLogo');
-    try{ const stored = localStorage.getItem('aud_header_logo_dataurl'); if(stored){ img.src = stored; } }catch(e){}
-    btnLogo.addEventListener('click', ()=> file.click());
-    file.addEventListener('change', ()=>{ const f = file.files && file.files[0]; if(!f) return; const rd = new FileReader(); rd.onload=()=>{ img.src = rd.result; try{ localStorage.setItem('aud_header_logo_dataurl', rd.result); }catch(e){} }; rd.readAsDataURL(f); });
+    try{ const stored = localStorage.getItem('aud_header_logo_dataurl'); if(stored && img){ img.src = stored; } }catch(e){}
+    if(btnLogo && file){
+      btnLogo.addEventListener('click', ()=> file.click());
+      file.addEventListener('change', ()=>{ const f = file.files && file.files[0]; if(!f) return; const rd = new FileReader(); rd.onload=()=>{ if(img) img.src = rd.result; try{ localStorage.setItem('aud_header_logo_dataurl', rd.result); }catch(e){} }; rd.readAsDataURL(f); });
+    }
   })();
 
   // ===== Estado & Storage =====
@@ -289,15 +336,14 @@
     saveCfg(cfg){ localStorage.setItem('aud_cfg', JSON.stringify(cfg)); },
     saveSearch(q){ localStorage.setItem('aud_search', q||''); }
   };
-
   let {expected, scans, cfg, search} = store.load();
   cfg = Object.assign({ minLen:0, maxLen:0, regex:'', guiado:false, extractECT:true, restrictBR:true }, cfg);
 
   // ===== Utilidades =====
-  const $  = (q)=>document.querySelector(q);
+  const $ = (q)=>document.querySelector(q);
   const $$ = (q)=>document.querySelectorAll(q);
   const nowISO = ()=> new Date().toISOString();
-  const normalize = s => (s||'').trim();
+  const normalize = s => (s||'').toString().trim();
   const includesI = (text, q)=> (text||'').toString().toLowerCase().includes((q||'').toString().toLowerCase());
 
   // Tabs visuais
@@ -320,16 +366,15 @@
 
   // Parse/validação
   const parseLines = (text)=>{
-    const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+    const lines = (text||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
     return lines.map(line=>{
-      const parts = line.split(/\t|;|,/);
+      const parts = line.split(/[\t;|,]/);
       const code = normalize(parts[0]);
       const desc = normalize(parts[1]||'');
-      const qty  = parseInt(parts[2]||'1',10);
+      const qty = parseInt(parts[2]||'1',10);
       return {code, desc, qtyExpected: isFinite(qty)?Math.max(1,qty):1};
     }).filter(x=>x.code);
   };
-
   const validateCode = (code)=>{
     if(!code) return {ok:false, reason:'vazio'};
     if(cfg.minLen>0 && code.length<cfg.minLen) return {ok:false, reason:'curto'};
@@ -337,11 +382,9 @@
     if(cfg.regex){ try{ const re = new RegExp(cfg.regex); if(!re.test(code)) return {ok:false, reason:'regex'}; } catch(e){} }
     return {ok:true};
   };
-
   const expectedMap = ()=>{ const m = new Map(); expected.forEach(it=> m.set(it.code, it)); return m; };
   const scanCounts = ()=>{ const m = new Map(); scans.forEach(s=> m.set(s.code, (m.get(s.code)||0)+1)); return m; };
   function recomputeCollectedOnExpected(){ const counts = scanCounts(); expected.forEach(it=> it.qtyCollected = counts.get(it.code)||0); }
-
   function metrics(){
     const mExp = expectedMap(); const counts = scanCounts();
     let incorretos=0, dups=0; const seen = new Map();
@@ -354,9 +397,8 @@
     recomputeCollectedOnExpected();
     renderCadastro(); renderColetas(); renderDivergencias(); renderKpis();
   }
-
   function renderCadastro(){
-    const tbody = $('#tblCadastro tbody'); tbody.innerHTML='';
+    const tbody = document.querySelector('#tblCadastro tbody'); tbody.innerHTML='';
     const list = search? expected.filter(it=> includesI(it.code,search) || includesI(it.desc,search)) : expected;
     for(const it of list){
       const tr = document.createElement('tr');
@@ -378,9 +420,8 @@
       });
     });
   }
-
   function renderColetas(){
-    const tbody = $('#tblColetas tbody'); tbody.innerHTML='';
+    const tbody = document.querySelector('#tblColetas tbody'); tbody.innerHTML='';
     const mExp = expectedMap(); const seen = new Map();
     (search? scans.filter(s=> includesI(s.code,search)) : scans).forEach((s, i)=>{
       const num = i+1; const known = mExp.has(s.code); const c=(seen.get(s.code)||0)+1; seen.set(s.code,c); const isDup = c>1;
@@ -391,11 +432,10 @@
       tbody.appendChild(tr);
     });
   }
-
   function renderDivergencias(){
     const counts = scanCounts();
     // Faltantes
-    const tF = $('#tblFaltantes tbody'); tF.innerHTML='';
+    const tF = document.querySelector('#tblFaltantes tbody'); tF.innerHTML='';
     expected.filter(it=> (counts.get(it.code)||0) < (it.qtyExpected||1)).forEach(it=>{
       if(search && !(includesI(it.code,search) || includesI(it.desc,search))) return;
       const tr = document.createElement('tr');
@@ -403,7 +443,7 @@
       tF.appendChild(tr);
     });
     // Incorretos
-    const tI = $('#tblIncorretos tbody'); tI.innerHTML='';
+    const tI = document.querySelector('#tblIncorretos tbody'); tI.innerHTML='';
     const mExp = expectedMap(); const inc = {};
     scans.forEach(s=>{ if(!mExp.has(s.code)) inc[s.code]=(inc[s.code]||0)+1; });
     Object.entries(inc).forEach(([code,qty])=>{
@@ -411,7 +451,7 @@
       const tr = document.createElement('tr'); tr.innerHTML=`<td>${escapeHtml(code)}</td><td>${qty}</td>`; tI.appendChild(tr);
     });
     // Duplicados
-    const tD = $('#tblDuplicados tbody'); tD.innerHTML='';
+    const tD = document.querySelector('#tblDuplicados tbody'); tD.innerHTML='';
     const dup = {}; const seen = {};
     scans.forEach(s=>{ seen[s.code]=(seen[s.code]||0)+1; if(seen[s.code]>1) dup[s.code]=(dup[s.code]||0)+1; });
     Object.entries(dup).forEach(([code,extra])=>{
@@ -419,7 +459,6 @@
       const tr = document.createElement('tr'); tr.innerHTML=`<td>${escapeHtml(code)}</td><td>${extra}</td>`; tD.appendChild(tr);
     });
   }
-
   function renderKpis(){
     const m = metrics();
     $('#kColetados').textContent = m.coletados;
@@ -438,7 +477,6 @@
     items.forEach(it=>{ if(!codes.has(it.code)) { expected.push({code:it.code, desc:it.desc, qtyExpected:it.qtyExpected, qtyCollected:0}); codes.add(it.code);} });
     store.saveExpected(expected); $('#txtCadastro').value=''; render();
   });
-
   $('#fileCadastro').addEventListener('change', async (e)=>{
     const file = e.target.files[0]; if(!file) return; const rows = await readSpreadsheet(file); if(!rows || !rows.length) return alert('Nenhuma linha encontrada.');
     const codes = new Set(expected.map(x=>x.code));
@@ -451,7 +489,6 @@
     });
     store.saveExpected(expected); e.target.value=''; render();
   });
-
   $('#btnExportarCadastro').addEventListener('click', ()=>{
     const rows = [['codigo','descricao','qtd_esperada','qtd_coletada']].concat(expected.map(it=>[it.code, it.desc||'', it.qtyExpected||1, it.qtyCollected||0]));
     downloadCSV('cadastro.csv', rows);
@@ -471,7 +508,7 @@
     let code = normalize(raw); if(!code) return; if(cfg.extractECT){ const ect = extractECT(code); if(ect) code = ect; }
     const v = validateCode(code); if(!v.ok){ alert('Código inválido: '+(v.reason||'')); return; }
     if(cfg.guiado){ const idx = expected.findIndex(x=>x.code===code); if(idx>=0){ expected[idx].qtyCollected = (expected[idx].qtyCollected||0)+1; store.saveExpected(expected); }
-                   else { scans.push({code, ts: nowISO()}); store.saveScans(scans); } }
+      else { scans.push({code, ts: nowISO()}); store.saveScans(scans); } }
     else { scans.push({code, ts: nowISO()}); store.saveScans(scans); }
     scanField.value=''; render();
   }
@@ -512,15 +549,25 @@
   function downloadXLSX(filename, sheetName, rows){ if(!hasXLSX){ alert('Biblioteca XLSX não carregou. Verifique sua internet.'); return; } const ws = XLSX.utils.aoa_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, sheetName); XLSX.writeFile(wb, filename); }
   function downloadXLSXMulti(filename, sheets){ if(!hasXLSX){ alert('Biblioteca XLSX não carregou. Verifique sua internet.'); return; } const wb = XLSX.utils.book_new(); for(const [name, rows] of Object.entries(sheets)){ XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name.substring(0,31)); } XLSX.writeFile(wb, filename); }
   async function readSpreadsheet(file){ if(!hasXLSX){ if(file.type.includes('csv') || /\.csv$/i.test(file.name)){ const text = await file.text(); return text.split(/\r?\n/).filter(Boolean).map(l=>l.split(/[;\t,]/)); } alert('Para importar Excel (.xlsx/.xls) é necessário internet para carregar a biblioteca.'); return []; } const data = new Uint8Array(await file.arrayBuffer()); const wb = XLSX.read(data, {type:'array'}); const sheet = wb.Sheets[wb.SheetNames[0]]; return XLSX.utils.sheet_to_json(sheet, {header:1, defval:''}); }
-  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+  function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, c=>({"&":"&","<":"<",">":">","\"":"\"","'":"&#39;"}[c])); }
 
-  // Init
+  // ===== Projetos (auditorias locais) =====
+  const projNameInput = $('#projName');
+  const projList = $('#projList');
+  function loadProjectsIndex(){ try{ return JSON.parse(localStorage.getItem('aud_projects') || '{}'); } catch(e){ return {}; } }
+  function saveProjectsIndex(idx){ localStorage.setItem('aud_projects', JSON.stringify(idx)); }
+  function refreshProjList(selected){ const idx = loadProjectsIndex(); projList.innerHTML = ''; const names = Object.keys(idx).sort(); names.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; projList.appendChild(o); }); if(selected && names.includes(selected)) projList.value = selected; }
+  document.getElementById('btnSaveProj').addEventListener('click', ()=>{ const name = (projNameInput.value||'').trim(); if(!name) return alert('Informe o nome da auditoria.'); const data = { expected, scans, cfg }; const idx = loadProjectsIndex(); idx[name] = data; saveProjectsIndex(idx); refreshProjList(name); alert('Auditoria salva!'); });
+  document.getElementById('btnLoadProj').addEventListener('click', ()=>{ const name = projList.value; if(!name) return alert('Selecione uma auditoria.'); const idx = loadProjectsIndex(); const data = idx[name]; if(!data) return alert('Auditoria não encontrada.'); expected = data.expected || []; scans = data.scans || []; cfg = Object.assign({ minLen:0, maxLen:0, regex:'', guiado:false, extractECT:true, restrictBR:true }, data.cfg || {}); store.saveExpected(expected); store.saveScans(scans); store.saveCfg(cfg); render(); projNameInput.value = name; alert('Auditoria carregada!'); });
+  document.getElementById('btnNewProj').addEventListener('click', ()=>{ if(!confirm('Iniciar auditoria em branco? Os dados atuais não serão apagados do catálogo, apenas será começado um conjunto novo.')) return; expected = []; scans = []; cfg = Object.assign({ minLen:0, maxLen:0, regex:'', guiado:false, extractECT:true, restrictBR:true }, {}); store.saveExpected(expected); store.saveScans(scans); store.saveCfg(cfg); render(); projNameInput.value = ''; });
+  document.getElementById('btnDeleteProj').addEventListener('click', ()=>{ const name = projList.value; if(!name) return alert('Selecione uma auditoria.'); if(!confirm(`Excluir a auditoria "${name}" do navegador?`)) return; const idx = loadProjectsIndex(); delete idx[name]; saveProjectsIndex(idx); refreshProjList(); });
+  document.getElementById('btnExportProj').addEventListener('click', ()=>{ const name = (projNameInput.value || 'auditoria').trim(); const data = { name, exportedAt: new Date().toISOString(), expected, scans, cfg }; const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json;charset=utf-8;'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${name.replace(/[\s\/\\:]/g,'_')}.json`; a.click(); setTimeout(()=> URL.revokeObjectURL(url), 1000); });
+  document.getElementById('fileImportProj').addEventListener('change', async (e)=>{ const f = e.target.files && e.target.files[0]; if(!f) return; try{ const text = await f.text(); const data = JSON.parse(text); const name = (data.name || f.name.replace(/\.json$/i,'')).trim(); const idx = loadProjectsIndex(); idx[name] = { expected: data.expected || [], scans: data.scans || [], cfg: data.cfg || {} }; saveProjectsIndex(idx); refreshProjList(name); projNameInput.value = name; alert('Arquivo importado para o catálogo de auditorias!'); } catch(err){ alert('Falha ao importar .json: ' + err.message); } finally { e.target.value = ''; } });
+
+  // ===== Init =====
   render(); setTimeout(()=>$('#scanInput')?.focus(), 200);
+  refreshProjList();
 })();
 </script>
 </body>
-
 </html>
-
-
-
