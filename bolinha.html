@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRIS</title>
+
+<style>
+
+body{
+    margin:0;
+    overflow:hidden;
+    background:#121212;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.bolinha{
+    position:absolute;
+    border-radius:50%;
+    overflow:visible;
+    cursor:pointer;
+    box-shadow:0 0 15px rgba(255,255,255,.2);
+}
+
+.bolinha img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    border-radius:50%;
+}
+
+.mensagem{
+    position:absolute;
+    bottom:110%;
+    left:50%;
+    transform:translateX(-50%);
+    background:#ff3333;
+    color:#fff;
+    padding:8px 12px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:bold;
+    white-space:nowrap;
+    display:none;
+    z-index:9999;
+    box-shadow:0 0 10px rgba(0,0,0,.5);
+}
+
+.estrelas{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:180%;
+    height:180%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+}
+
+.estrela{
+    position:absolute;
+    transform:translate(-50%,-50%);
+    font-size:20px;
+    color:#444;
+    text-shadow:0 0 4px #000;
+}
+
+.estrela.ativa{
+    color:#FFD700;
+    text-shadow:
+        0 0 5px #FFD700,
+        0 0 10px #FFD700,
+        0 0 20px #FFD700,
+        0 0 30px #FFD700;
+}
+
+.bolinha:hover .mensagem{
+    display:block;
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+
+// ===========================================
+// FOTOS E FRASES
+// ===========================================
+
+const pessoas = [
+
+{
+    foto:"doli.png",
+    frase:"Noosssaaaaaaaaaaaaa",
+    estrelas:0
+},
+
+{
+    foto:"blzman.png",
+    frase:"Ta certo",
+    estrelas:0
+},
+
+{
+    foto:"novo.png",
+    frase:"HUmmmmmmmmmmmmmmmmmmm",
+    estrelas:0
+},
+
+{
+    foto:"braco.png",
+    frase:"AHHHH naooooooooo",
+    estrelas:0
+},
+
+{
+    foto:"gab.jpg",
+    frase:"Bom trabalho!",
+    estrelas:0
+},
+
+{
+    foto:"gabbs.png",
+    frase:"Manda o e-mail das iscas",
+    estrelas:1
+},
+
+{
+    foto:"jon.jpg",
+    frase:"Nao quero saber",
+    estrelas:0
+},
+
+{
+    foto:"kau2.jpg",
+    frase:"Tenho uma duvida",
+    estrelas:0
+},
+
+{
+    foto:"kauu.jpg",
+    frase:"Teve falta na Edenildes",
+    estrelas:1
+},
+
+{
+    foto:"mai.jpg",
+    frase:"Esta contando as pecas",
+    estrelas:1
+},
+
+{
+    foto:"marcos.png",
+    frase:"Ja fez acareação",
+    estrelas:1
+},
+
+{
+    foto:"naty.png",
+    frase:"Hoje tem devolucao",
+    estrelas:1
+},
+
+{
+    foto:"nub.jpg",
+    frase:"O que tem pra fazer",
+    estrelas:0
+},
+
+{
+    foto:"sofi.png",
+    frase:"Vou fazer embalagem analise",
+    estrelas:0
+},
+
+{
+    foto:"yos.jpg",
+    frase:"Tudo certo",
+    estrelas:0
+}
+
+];
+
+
+// ===========================================
+// CRIA BOLINHAS
+// ===========================================
+
+const bolinhas = [];
+
+pessoas.forEach(item => {
+
+    const div = document.createElement("div");
+
+    div.className = "bolinha";
+
+    // CORRIGIDO AQUI
+    div.innerHTML = `
+        <span class="mensagem">${item.frase}</span>
+
+        <div class="estrelas"></div>
+
+        <img src="${item.foto}" alt="${item.frase}">
+    `;
+
+    document.body.appendChild(div);
+
+
+    // ===========================================
+    // CRIA ESTRELAS
+    // ===========================================
+
+    const estrelasContainer =
+        div.querySelector(".estrelas");
+
+    const totalEstrelas = 5;
+
+    for(let i = 0; i < totalEstrelas; i++){
+
+        const estrela =
+            document.createElement("span");
+
+        estrela.className = "estrela";
+
+        if(i < (item.estrelas || 0)){
+            estrela.classList.add("ativa");
+        }
+
+        estrela.innerHTML = "★";
+
+        const angulo =
+            (Math.PI * 2 * i / totalEstrelas)
+            - Math.PI / 2;
+
+        const raio = 48;
+
+        const x =
+            50 + Math.cos(angulo) * raio;
+
+        const y =
+            50 + Math.sin(angulo) * raio;
+
+        estrela.style.left = x + "%";
+        estrela.style.top = y + "%";
+
+        estrelasContainer.appendChild(estrela);
+    }
+
+
+    // ===========================================
+    // CONFIGURAÇÃO DA BOLINHA
+    // ===========================================
+
+    bolinhas.push({
+
+        el:div,
+
+        x:Math.random() * window.innerWidth,
+
+        y:Math.random() * window.innerHeight,
+
+        vx:(Math.random() * 1.5) + 0.5,
+
+        vy:(Math.random() * 1.5) + 0.5,
+
+        tamanhoBase:60 + Math.random() * 60,
+
+        fase:Math.random() * Math.PI * 2
+
+    });
+
+});
+
+
+// ===========================================
+// ANIMAÇÃO
+// ===========================================
+
+let tempo = 0;
+
+function animar(){
+
+    tempo += 0.02;
+
+    bolinhas.forEach(b => {
+
+        const escala =
+            0.7 +
+            Math.sin(tempo + b.fase) * 0.3;
+
+        const tamanho =
+            b.tamanhoBase * (1 + escala);
+
+        b.x += b.vx;
+
+        b.y += b.vy;
+
+
+        if(
+            b.x <= 0 ||
+            b.x + tamanho >= window.innerWidth
+        ){
+
+            b.vx *= -1;
+
+        }
+
+
+        if(
+            b.y <= 0 ||
+            b.y + tamanho >= window.innerHeight
+        ){
+
+            b.vy *= -1;
+
+        }
+
+
+        b.el.style.width =
+            tamanho + "px";
+
+        b.el.style.height =
+            tamanho + "px";
+
+        b.el.style.left =
+            b.x + "px";
+
+        b.el.style.top =
+            b.y + "px";
+
+        b.el.style.zIndex =
+            Math.floor(tamanho);
+
+    });
+
+    requestAnimationFrame(animar);
+
+}
+
+animar();
+
+
+// ===========================================
+// WAKE LOCK
+// ===========================================
+
+let wakeLock = null;
+
+async function ativarWakeLock(){
+
+    if(!("wakeLock" in navigator)){
+        return;
+    }
+
+    try{
+
+        wakeLock =
+            await navigator.wakeLock.request("screen");
+
+    }
+
+    catch(e){
+
+        console.log(e);
+
+    }
+
+}
+
+ativarWakeLock();
+
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if(document.visibilityState === "visible"){
+
+            ativarWakeLock();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
