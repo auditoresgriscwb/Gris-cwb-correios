@@ -7,18 +7,28 @@
   <!-- Adiciona a biblioteca SheetJS para gerar Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin: 40px;
-      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
       box-sizing: border-box;
     }
 
-    #top-info {
+    .header-banner {
+      background-color: #d32f2f;
+      color: white;
+      padding: 20px;
+      font-size: 22px;
+      font-weight: bold;
       margin-bottom: 30px;
-      font-size: 18px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    #top-info {
+      margin-bottom: 20px;
+      font-size: 16px;
       font-weight: bold;
     }
 
@@ -41,7 +51,7 @@
       text-align: center;
       font-weight: bold;
       margin-bottom: 5px;
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
 
     select, input[type="text"] {
@@ -54,28 +64,30 @@
       box-sizing: border-box;
       padding: 0 8px;
       border-radius: 4px;
+      background-color: white;
     }
 
     button {
-      padding: 12px 24px;
-      font-size: 16px;
+      padding: 10px 20px;
+      font-size: 15px;
       font-weight: bold;
       cursor: pointer;
       border: 1px solid black;
-      background-color: white;
+      background-color: #e0e0e0;
       border-radius: 4px;
       box-sizing: border-box;
       transition: background-color 0.3s ease;
     }
 
     button:hover {
-      background-color: #f0f0f0;
+      background-color: #d0d0d0;
     }
 
     /* Botão enviar centralizado */
     #btn-enviar {
       display: block;
       margin: 0 auto 10px auto;
+      background-color: white;
     }
 
     /* Botões lado a lado */
@@ -86,10 +98,10 @@
       margin-bottom: 30px;
     }
 
-    /* Botões menores para caber lado a lado */
     #botoes-container button {
       flex: 1;
-      max-width: 200px;
+      max-width: 180px;
+      background-color: white;
     }
 
     table {
@@ -99,10 +111,10 @@
       margin: 0 auto 30px auto;
       box-sizing: border-box;
       font-size: 16px;
+      background-color: white;
     }
 
-    th,
-    td {
+    th, td {
       border: 1px solid black;
       padding: 10px;
       text-align: center;
@@ -124,11 +136,10 @@
       z-index: 1000;
       flex-direction: column;
       box-sizing: border-box;
-      padding-top: 80px; /* espaço para botões voltar e exportar */
+      padding-top: 80px;
       align-items: center;
     }
 
-    /* Container para botões Voltar e Exportar lado a lado no topo da modal */
     #modal-botoes-topo {
       position: fixed;
       top: 10px;
@@ -145,81 +156,26 @@
       border: 1px solid black;
       border-radius: 4px;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
-      box-sizing: border-box;
-      transition: background-color 0.3s ease;
-    }
-    #modal-botoes-topo button:hover {
-      background-color: #f0f0f0;
-    }
-
-    #modal-tabela table {
-      margin: 0 auto;
-      overflow-y: auto;
-      max-height: calc(100vh - 100px);
-      display: block;
     }
 
     .hidden {
       display: none !important;
     }
 
-    @media (max-width: 600px) {
-      body {
-        margin: 20px 10px;
-      }
-
-      #top-info {
-        font-size: 16px;
-        margin-bottom: 20px;
-      }
-
-      .form-container {
-        max-width: 100%;
-        padding: 0 5px;
-      }
-
-      select, input[type="text"] {
-        font-size: 14px;
-        height: 34px;
-      }
-
-      button {
-        font-size: 14px;
-        padding: 10px 20px;
-        max-width: 100%;
-      }
-
-      #botoes-container {
-        flex-direction: column;
-        gap: 15px;
-      }
-
-      #botoes-container button {
-        max-width: 100%;
-      }
-
-      table {
-        font-size: 14px;
-      }
-
-      th,
-      td {
-        padding: 8px;
-      }
-    }
-
     #mensagem-erro, #mensagem-limite {
       color: red;
       font-weight: bold;
       text-align: center;
+      font-size: 14px;
     }
 
     #rodape {
       margin-top: 20px;
       font-size: 16px;
       font-weight: bold;
+      padding-bottom: 20px;
     }
 
     #confirmacao-exportar,
@@ -245,16 +201,20 @@
       max-width: 320px;
     }
 
-    /* Botões Sim e Não lado a lado */
     #confirmacao-exportar button,
     #confirmacao-limpar button {
       margin: 10px 5px 0 5px;
       width: 90px;
-      padding: 10px;
+      padding: 8px;
     }
   </style>
 </head>
 <body>
+
+  <div class="header-banner">
+    AUDITORIA
+  </div>
+
   <div id="top-info">
     QTD Bipada: <span id="contador">0</span> | Último código: <span id="ultimo-codigo">-</span>
   </div>
@@ -275,7 +235,7 @@
         <option>Nubia E R </option>
         <option>GRIS Simone M B H </option>
         <option>Yosden J P A </option>
-		<option>Fabiane D S P</option> 
+        <option>Fabiane D S P</option> 
       </select>
     </div>
 
@@ -285,7 +245,7 @@
         <option value="" disabled>Selecione o FLUXO</option>
         <option> CORREIOS SAIDA </option>
         <option> CORREIOS DEVOLUÇAO </option>
-	<option> OUTROS </option>
+        <option> OUTROS </option>
       </select>
     </div>
 
@@ -300,7 +260,7 @@
   </form>
 
   <div id="botoes-container">
-    <button id="botao-tabela">Consultar Peças </button>
+    <button id="botao-tabela">Consultar Peças</button>
     <button id="botao-exportar">Exportar Excel</button>
     <button id="botao-limpar">Limpar tudo</button>
   </div>
@@ -476,7 +436,7 @@
       document.getElementById("rodape").classList.remove("hidden");
     };
 
-  function exportarExcel() {
+    function exportarExcel() {
       const linhas = [
         ["BASE", "SETOR", "CODIGO", "Data/Hora"],
         ...dados.map(d => [d.base, d.setor, d.codigo, d.dataHora])
@@ -512,9 +472,7 @@
       const nomeArquivo = `INVENTARIO-${baseNome}-${setorNome}-${dia}-${mes}-${ano}-${hora}h${minuto}m${segundo}s.xlsx`;
 
       XLSX.writeFile(workbook, nomeArquivo);
-
-
-   }
+    }
 
     botaoExportar.onclick = () => {
       confirmacaoExportar.style.display = "flex";
