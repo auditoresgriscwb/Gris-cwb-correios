@@ -138,6 +138,14 @@
       box-sizing: border-box;
       padding-top: 80px;
       align-items: center;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Permite rolar a lista de peças quando houver muitos registros */
+    #modal-tabela #tabela {
+      flex: 0 0 auto;
+      margin-bottom: 30px;
     }
 
     #modal-botoes-topo {
@@ -206,6 +214,49 @@
       margin: 10px 5px 0 5px;
       width: 90px;
       padding: 8px;
+    }
+
+
+    /* Modal de código incorreto: bloqueia a auditoria até ser fechado */
+    #modal-codigo-incorreto {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.65);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #modal-codigo-incorreto > div {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 420px;
+      width: calc(100% - 40px);
+      box-sizing: border-box;
+      border: 2px solid red;
+    }
+
+    #modal-codigo-incorreto h3 {
+      color: red;
+      margin-top: 0;
+    }
+
+    #modal-codigo-incorreto p {
+      font-size: 16px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    #fechar-codigo-incorreto {
+      margin-top: 10px;
+      width: 140px;
+      background: white;
     }
   </style>
 </head>
@@ -303,6 +354,15 @@
     </div>
   </div>
 
+
+  <div id="modal-codigo-incorreto">
+    <div>
+      <h3>CÓDIGO INCORRETO</h3>
+      <p id="texto-codigo-incorreto">O código bipado não é permitido.</p>
+      <button id="fechar-codigo-incorreto">FECHAR</button>
+    </div>
+  </div>
+
   <script>
     const form = document.getElementById("meuFormulario");
     const tabelaBody = document.querySelector("#tabela tbody");
@@ -324,6 +384,9 @@
     const confirmacaoLimpar = document.getElementById("confirmacao-limpar");
     const btnSimLimpar = document.getElementById("confirmar-sim-limpar");
     const btnNaoLimpar = document.getElementById("confirmar-nao-limpar");
+    const modalCodigoIncorreto = document.getElementById("modal-codigo-incorreto");
+    const textoCodigoIncorreto = document.getElementById("texto-codigo-incorreto");
+    const fecharCodigoIncorreto = document.getElementById("fechar-codigo-incorreto");
     const selectBase = document.getElementById("base");
     const selectSetor = document.getElementById("setor");
 
@@ -377,21 +440,68 @@
       }
     }
 
+    // Valida os formatos permitidos e, no formato longo, extrai somente AD...BR.
+    function processarCodigoBipado(codigoOriginal) {
+      const codigo = codigoOriginal.trim().toUpperCase();
+
+      // Formato 1: TXAQ494219298TX
+      const formatoTX = /^TXAQ494219298TX$/;
+
+      // Formato 2: AD789061991BR
+      const formatoAD = /^AD\d+BR$/;
+
+      // Formato 3: código longo que contém AD...BR.
+      // Neste formato, somente o trecho iniciado em AD e terminado em BR é registrado.
+      const formatoLongo = /^86755000000058308552001240951AD\d+BR00167300618000000100005CASA\s+0554986755000-00\.000000-00\.000000$/;
+
+      if (formatoTX.test(codigo)) {
+        return codigo;
+      }
+
+      if (formatoAD.test(codigo)) {
+        return codigo;
+      }
+
+      if (formatoLongo.test(codigo)) {
+        const encontrado = codigo.match(/AD\d+BR/);
+        return encontrado ? encontrado[0] : null;
+      }
+
+      return null;
+    }
+
+    function mostrarCodigoIncorreto(codigo) {
+      textoCodigoIncorreto.textContent =
+        `Código não permitido: ${codigo}. Feche esta mensagem para continuar a auditoria.`;
+      modalCodigoIncorreto.style.display = "flex";
+      setTimeout(() => fecharCodigoIncorreto.focus(), 0);
+    }
+
+    fecharCodigoIncorreto.onclick = () => {
+      modalCodigoIncorreto.style.display = "none";
+      const campoCodigo = document.getElementById("codigo");
+      campoCodigo.value = "";
+      campoCodigo.focus();
+    };
+
     form.addEventListener("submit", e => {
       e.preventDefault();
       erroMsg.textContent = "";
 
       const base = selectBase.value;
       const setor = selectSetor.value;
-      let codigo = document.getElementById("codigo").value.trim().toUpperCase();
+      const codigoBipado = document.getElementById("codigo").value.trim().toUpperCase();
 
       if (!base || !setor) {
         erroMsg.textContent = "Por favor, selecione o AUDITOR.";
         return;
       }
 
-      if (!/^[A-Z0-9]+$/.test(codigo)) {
-        erroMsg.textContent = "Somente letras e números são permitidos.";
+      const codigo = processarCodigoBipado(codigoBipado);
+
+      if (!codigo) {
+        // Não registra o código e bloqueia a continuidade até fechar a mensagem.
+        mostrarCodigoIncorreto(codigoBipado);
         return;
       }
 
@@ -437,9 +547,25 @@
     };
 
     function exportarExcel() {
+      // Separa os códigos no Excel:
+      // CODIGO REDESPACHO = códigos que começam com AD e terminam em BR
+      // CODIGOS TOTAL = todos os demais códigos (ex.: TXAQ...)
+      const codigosRedespacho = dados
+        .map(d => d.codigo)
+        .filter(codigo => /^AD\d+BR$/.test(codigo));
+
+      const codigosTotal = dados
+        .map(d => d.codigo)
+        .filter(codigo => !/^AD\d+BR$/.test(codigo));
+
+      const maiorQuantidade = Math.max(codigosRedespacho.length, codigosTotal.length);
+
       const linhas = [
-        ["BASE", "SETOR", "CODIGO", "Data/Hora"],
-        ...dados.map(d => [d.base, d.setor, d.codigo, d.dataHora])
+        ["CODIGO REDESPACHO", "CODIGOS TOTAL"],
+        ...Array.from({ length: maiorQuantidade }, (_, i) => [
+          codigosRedespacho[i] || "",
+          codigosTotal[i] || ""
+        ])
       ];
 
       const worksheet = XLSX.utils.aoa_to_sheet(linhas);
