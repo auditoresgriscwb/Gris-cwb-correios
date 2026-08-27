@@ -3,51 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
   <title>AUDITORIA DOS CORREIOS</title>
-  <!-- Adiciona a biblioteca SheetJS para gerar Excel -->
+
+  <!-- Biblioteca SheetJS para gerar Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
   <style>
-    /* Modal de código duplicado */
-#modal-codigo-duplicado {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.65);
-  z-index: 2000;
-  align-items: center;
-  justify-content: center;
-}
-
-#modal-codigo-duplicado > div {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  text-align: center;
-  max-width: 420px;
-  width: calc(100% - 40px);
-  box-sizing: border-box;
-  border: 2px solid red;
-}
-
-#modal-codigo-duplicado h3 {
-  color: red;
-  margin-top: 0;
-}
-
-#modal-codigo-duplicado p {
-  font-size: 16px;
-  font-weight: bold;
-  word-break: break-word;
-}
-
-#fechar-codigo-duplicado {
-  margin-top: 10px;
-  width: 140px;
-  background: white;
-}
     body {
       font-family: Arial, sans-serif;
       text-align: center;
@@ -95,7 +57,8 @@
       font-size: 0.9rem;
     }
 
-    select, input[type="text"] {
+    select,
+    input[type="text"] {
       width: 100%;
       height: 36px;
       font-size: 16px;
@@ -124,14 +87,19 @@
       background-color: #d0d0d0;
     }
 
-    /* Botão enviar centralizado */
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* Botão enviar */
     #btn-enviar {
       display: block;
       margin: 0 auto 10px auto;
       background-color: white;
     }
 
-    /* Botões lado a lado */
+    /* Botões principais */
     #botoes-container {
       display: flex;
       justify-content: center;
@@ -145,6 +113,7 @@
       background-color: white;
     }
 
+    /* Tabela */
     table {
       border-collapse: collapse;
       width: 90%;
@@ -155,7 +124,8 @@
       background-color: white;
     }
 
-    th, td {
+    th,
+    td {
       border: 1px solid black;
       padding: 10px;
       text-align: center;
@@ -166,6 +136,7 @@
       background-color: #ddd;
     }
 
+    /* Modal da tabela */
     #modal-tabela {
       display: none;
       position: fixed;
@@ -183,7 +154,6 @@
       overflow-x: hidden;
     }
 
-    /* Permite rolar a lista de peças quando houver muitos registros */
     #modal-tabela #tabela {
       flex: 0 0 auto;
       margin-bottom: 30px;
@@ -213,13 +183,16 @@
       display: none !important;
     }
 
-    #mensagem-erro, #mensagem-limite {
+    /* Mensagens */
+    #mensagem-erro,
+    #mensagem-limite {
       color: red;
       font-weight: bold;
       text-align: center;
       font-size: 14px;
     }
 
+    /* Rodapé */
     #rodape {
       margin-top: 20px;
       font-size: 16px;
@@ -227,6 +200,7 @@
       padding-bottom: 20px;
     }
 
+    /* Modais de confirmação */
     #confirmacao-exportar,
     #confirmacao-limpar {
       display: none;
@@ -257,8 +231,7 @@
       padding: 8px;
     }
 
-
-    /* Modal de código incorreto: bloqueia a auditoria até ser fechado */
+    /* Modal código incorreto */
     #modal-codigo-incorreto {
       display: none;
       position: fixed;
@@ -299,8 +272,51 @@
       width: 140px;
       background: white;
     }
+
+    /* Modal código duplicado */
+    #modal-codigo-duplicado {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.65);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #modal-codigo-duplicado > div {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 420px;
+      width: calc(100% - 40px);
+      box-sizing: border-box;
+      border: 2px solid red;
+    }
+
+    #modal-codigo-duplicado h3 {
+      color: red;
+      margin-top: 0;
+    }
+
+    #modal-codigo-duplicado p {
+      font-size: 16px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    #fechar-codigo-duplicado {
+      margin-top: 10px;
+      width: 140px;
+      background: white;
+    }
   </style>
 </head>
+
 <body>
 
   <div class="header-banner">
@@ -308,61 +324,104 @@
   </div>
 
   <div id="top-info">
-    QTD Bipada: <span id="contador">0</span> | Último código: <span id="ultimo-codigo">-</span>
+    QTD Bipada:
+    <span id="contador">0</span>
+    |
+    Último código:
+    <span id="ultimo-codigo">-</span>
   </div>
 
+  <!-- FORMULÁRIO -->
   <form class="form-container" id="meuFormulario">
+
     <div class="form-group">
       <label for="base">AUDITOR</label>
+
       <select id="base" required>
-        <option value="" disabled> Selecione o AUDITOR </option>
-        <option> Aura C V M </option>
-        <option> Douleiber J M F </option>
-        <option> Fabiana D S P </option>
-        <option> Gabriel L M </option>
-        <option> Jonathan D M R </option>
-        <option> Kauany K B D A </option>
-        <option> Kauany T P </option>
-        <option> Mailen A C R </option>
-        <option> Marcos M </option>
-        <option> Nubia E R </option>
-        <option> Sofia C P G </option>
-        <option> OUTROS ESCREVER APOS BAIXAR A PLANILHA </option> 
+        <option value="" disabled selected>Selecione o AUDITOR</option>
+
+        <option>Aura C V M</option>
+        <option>Douleiber J M F</option>
+        <option>Fabiana D S P</option>
+        <option>Gabriel L M</option>
+        <option>Jonathan D M R</option>
+        <option>Kauany K B D A</option>
+        <option>Kauany T P</option>
+        <option>Mailen A C R</option>
+        <option>Marcos M</option>
+        <option>Nubia E R</option>
+        <option>Sofia C P G</option>
+
+        <option>OUTROS ESCREVER APOS BAIXAR A PLANILHA</option>
       </select>
     </div>
 
     <div class="form-group">
       <label for="setor">FLUXO</label>
+
       <select id="setor" required>
-        <option value="" disabled>Selecione o FLUXO</option>
-        <option> CORREIOS SAIDA </option>
-        <option> CORREIOS DEVOLUÇAO </option>
-        <option> OUTROS </option>
+        <option value="" disabled selected>Selecione o FLUXO</option>
+
+        <option>CORREIOS SAIDA</option>
+        <option>CORREIOS DEVOLUÇAO</option>
+        <option>OUTROS</option>
       </select>
     </div>
 
     <div class="form-group">
       <label for="codigo">CODIGO</label>
-      <input type="text" id="codigo" required autocomplete="off" />
+
+      <input
+        type="text"
+        id="codigo"
+        required
+        autocomplete="off"
+      />
     </div>
 
-    <button type="submit" id="btn-enviar">ENVIAR</button>
+    <button type="submit" id="btn-enviar">
+      ENVIAR
+    </button>
+
     <div id="mensagem-erro"></div>
     <div id="mensagem-limite"></div>
+
   </form>
 
+  <!-- BOTÕES -->
   <div id="botoes-container">
-    <button id="botao-tabela">Consultar Peças</button>
-    <button id="botao-exportar">Exportar Excel</button>
-    <button id="botao-limpar">Limpar tudo</button>
+
+    <button id="botao-tabela">
+      Consultar Peças
+    </button>
+
+    <button id="botao-exportar">
+      Exportar Excel
+    </button>
+
+    <button id="botao-limpar">
+      Limpar tudo
+    </button>
+
   </div>
 
+  <!-- MODAL DA TABELA -->
   <div id="modal-tabela">
+
     <div id="modal-botoes-topo">
-      <button id="botao-ocultar">Voltar</button>
-      <button id="botao-exportar-modal">Exportar Excel</button>
+
+      <button id="botao-ocultar">
+        Voltar
+      </button>
+
+      <button id="botao-exportar-modal">
+        Exportar Excel
+      </button>
+
     </div>
+
     <table id="tabela">
+
       <thead>
         <tr>
           <th>AUDITOR</th>
@@ -371,344 +430,912 @@
           <th>Data/Hora</th>
         </tr>
       </thead>
+
       <tbody></tbody>
+
     </table>
+
   </div>
 
+  <!-- RODAPÉ -->
   <div id="rodape">
-    Restantes: <span id="restantes">2500</span>
+    Restantes:
+    <span id="restantes">2500</span>
   </div>
 
+  <!-- CONFIRMAÇÃO EXPORTAR -->
   <div id="confirmacao-exportar">
+
     <div>
-      <p>Após exportar a auditoria será reiniciado, deseja continuar?</p>
-      <button id="confirmar-sim-exportar">Sim</button>
-      <button id="confirmar-nao-exportar">Não</button>
+
+      <p>
+        Após exportar a auditoria será reiniciada.
+        Deseja continuar?
+      </p>
+
+      <button id="confirmar-sim-exportar">
+        Sim
+      </button>
+
+      <button id="confirmar-nao-exportar">
+        Não
+      </button>
+
     </div>
+
   </div>
 
+  <!-- CONFIRMAÇÃO LIMPAR -->
   <div id="confirmacao-limpar">
+
     <div>
-      <p>Todos os dados serão apagados, deseja continuar?</p>
-      <button id="confirmar-sim-limpar">Sim</button>
-      <button id="confirmar-nao-limpar">Não</button>
+
+      <p>
+        Todos os dados serão apagados.
+        Deseja continuar?
+      </p>
+
+      <button id="confirmar-sim-limpar">
+        Sim
+      </button>
+
+      <button id="confirmar-nao-limpar">
+        Não
+      </button>
+
     </div>
+
   </div>
 
-
+  <!-- MODAL CÓDIGO INCORRETO -->
   <div id="modal-codigo-incorreto">
+
     <div>
+
       <h3>CÓDIGO INCORRETO</h3>
-      <p id="texto-codigo-incorreto">O código bipado não é permitido.</p>
-      <button id="fechar-codigo-incorreto">FECHAR</button>
+
+      <p id="texto-codigo-incorreto">
+        O código bipado não é permitido.
+      </p>
+
+      <button id="fechar-codigo-incorreto">
+        FECHAR
+      </button>
+
     </div>
+
+  </div>
+
+  <!-- MODAL CÓDIGO DUPLICADO -->
+  <div id="modal-codigo-duplicado">
+
+    <div>
+
+      <h3>CÓDIGO JÁ BIPADO</h3>
+
+      <p id="texto-codigo-duplicado">
+        Este código já foi registrado na auditoria.
+      </p>
+
+      <button id="fechar-codigo-duplicado">
+        FECHAR
+      </button>
+
+    </div>
+
   </div>
 
   <script>
+
+    /* ELEMENTOS DA PÁGINA */
+
     const form = document.getElementById("meuFormulario");
-    const tabelaBody = document.querySelector("#tabela tbody");
-    const contador = document.getElementById("contador");
-    const ultimoCodigo = document.getElementById("ultimo-codigo");
-    const restantes = document.getElementById("restantes");
-    const btnEnviar = document.getElementById("btn-enviar");
-    const erroMsg = document.getElementById("mensagem-erro");
-    const limiteMsg = document.getElementById("mensagem-limite");
-    const modalTabela = document.getElementById("modal-tabela");
-    const botaoTabela = document.getElementById("botao-tabela");
-    const botaoOcultar = document.getElementById("botao-ocultar");
-    const botaoExportar = document.getElementById("botao-exportar");
-    const botaoExportarModal = document.getElementById("botao-exportar-modal");
-    const botaoLimpar = document.getElementById("botao-limpar");
-    const confirmacaoExportar = document.getElementById("confirmacao-exportar");
-    const btnSimExportar = document.getElementById("confirmar-sim-exportar");
-    const btnNaoExportar = document.getElementById("confirmar-nao-exportar");
-    const confirmacaoLimpar = document.getElementById("confirmacao-limpar");
-    const btnSimLimpar = document.getElementById("confirmar-sim-limpar");
-    const btnNaoLimpar = document.getElementById("confirmar-nao-limpar");
-    const modalCodigoIncorreto = document.getElementById("modal-codigo-incorreto");
-    const textoCodigoIncorreto = document.getElementById("texto-codigo-incorreto");
-    const fecharCodigoIncorreto = document.getElementById("fechar-codigo-incorreto");
-    const selectBase = document.getElementById("base");
-    const selectSetor = document.getElementById("setor");
-    const modalCodigoDuplicado = document.getElementById("modal-codigo-duplicado");
-    const textoCodigoDuplicado = document.getElementById("texto-codigo-duplicado");
-    const fecharCodigoDuplicado = document.getElementById("fechar-codigo-duplicado");
+
+    const tabelaBody =
+      document.querySelector("#tabela tbody");
+
+    const contador =
+      document.getElementById("contador");
+
+    const ultimoCodigo =
+      document.getElementById("ultimo-codigo");
+
+    const restantes =
+      document.getElementById("restantes");
+
+    const btnEnviar =
+      document.getElementById("btn-enviar");
+
+    const erroMsg =
+      document.getElementById("mensagem-erro");
+
+    const limiteMsg =
+      document.getElementById("mensagem-limite");
+
+    const modalTabela =
+      document.getElementById("modal-tabela");
+
+    const botaoTabela =
+      document.getElementById("botao-tabela");
+
+    const botaoOcultar =
+      document.getElementById("botao-ocultar");
+
+    const botaoExportar =
+      document.getElementById("botao-exportar");
+
+    const botaoExportarModal =
+      document.getElementById("botao-exportar-modal");
+
+    const botaoLimpar =
+      document.getElementById("botao-limpar");
+
+    const confirmacaoExportar =
+      document.getElementById("confirmacao-exportar");
+
+    const btnSimExportar =
+      document.getElementById("confirmar-sim-exportar");
+
+    const btnNaoExportar =
+      document.getElementById("confirmar-nao-exportar");
+
+    const confirmacaoLimpar =
+      document.getElementById("confirmacao-limpar");
+
+    const btnSimLimpar =
+      document.getElementById("confirmar-sim-limpar");
+
+    const btnNaoLimpar =
+      document.getElementById("confirmar-nao-limpar");
+
+    const modalCodigoIncorreto =
+      document.getElementById("modal-codigo-incorreto");
+
+    const textoCodigoIncorreto =
+      document.getElementById("texto-codigo-incorreto");
+
+    const fecharCodigoIncorreto =
+      document.getElementById("fechar-codigo-incorreto");
+
+    const modalCodigoDuplicado =
+      document.getElementById("modal-codigo-duplicado");
+
+    const textoCodigoDuplicado =
+      document.getElementById("texto-codigo-duplicado");
+
+    const fecharCodigoDuplicado =
+      document.getElementById("fechar-codigo-duplicado");
+
+    const selectBase =
+      document.getElementById("base");
+
+    const selectSetor =
+      document.getElementById("setor");
+
+
+    /* CONFIGURAÇÕES */
 
     const LIMITE = 2500;
-    let dados = JSON.parse(localStorage.getItem("dadosInventario") || "[]");
-    function mostrarCodigoDuplicado(codigo) {
-  textoCodigoDuplicado.textContent =
-    `O código ${codigo} já foi bipado anteriormente.`;
-    
-  modalCodigoDuplicado.style.display = "flex";
 
-  setTimeout(() => fecharCodigoDuplicado.focus(), 0);
-}
+    let dados = JSON.parse(
+      localStorage.getItem("dadosInventario") || "[]"
+    );
 
-fecharCodigoDuplicado.onclick = () => {
-  modalCodigoDuplicado.style.display = "none";
 
-  const campoCodigo = document.getElementById("codigo");
-  campoCodigo.value = "";
-  campoCodigo.focus();
-};
+    /* SALVAR DADOS */
 
     function salvarDados() {
-      localStorage.setItem("dadosInventario", JSON.stringify(dados));
+
+      localStorage.setItem(
+        "dadosInventario",
+        JSON.stringify(dados)
+      );
+
     }
+
+
+    /* SALVAR ÚLTIMOS CAMPOS */
 
     function salvarUltimosSelects() {
-      localStorage.setItem("ultimoBase", selectBase.value);
-      localStorage.setItem("ultimoSetor", selectSetor.value);
+
+      localStorage.setItem(
+        "ultimoBase",
+        selectBase.value
+      );
+
+      localStorage.setItem(
+        "ultimoSetor",
+        selectSetor.value
+      );
+
     }
+
+
+    /* LIMPAR ÚLTIMOS CAMPOS */
 
     function limparUltimosSelects() {
+
       localStorage.removeItem("ultimoBase");
       localStorage.removeItem("ultimoSetor");
+
     }
+
+
+    /* CARREGAR ÚLTIMOS CAMPOS */
 
     function carregarUltimosSelects() {
-      const baseSalvo = localStorage.getItem("ultimoBase");
-      const setorSalvo = localStorage.getItem("ultimoSetor");
 
-      if (baseSalvo) selectBase.value = baseSalvo;
-      else selectBase.value = "";
+      const baseSalvo =
+        localStorage.getItem("ultimoBase");
 
-      if (setorSalvo) selectSetor.value = setorSalvo;
-      else selectSetor.value = "";
+      const setorSalvo =
+        localStorage.getItem("ultimoSetor");
+
+
+      if (baseSalvo) {
+
+        selectBase.value = baseSalvo;
+
+      } else {
+
+        selectBase.value = "";
+
+      }
+
+
+      if (setorSalvo) {
+
+        selectSetor.value = setorSalvo;
+
+      } else {
+
+        selectSetor.value = "";
+
+      }
+
     }
+
+
+    /* ATUALIZAR INTERFACE */
 
     function atualizarUI() {
+
       tabelaBody.innerHTML = "";
+
+
       dados.forEach(d => {
-        const row = tabelaBody.insertRow();
-        row.insertCell(0).textContent = d.base;
-        row.insertCell(1).textContent = d.setor;
-        row.insertCell(2).textContent = d.codigo;
-        row.insertCell(3).textContent = d.dataHora;
+
+        const row =
+          tabelaBody.insertRow();
+
+        row.insertCell(0).textContent =
+          d.base;
+
+        row.insertCell(1).textContent =
+          d.setor;
+
+        row.insertCell(2).textContent =
+          d.codigo;
+
+        row.insertCell(3).textContent =
+          d.dataHora;
+
       });
 
-      contador.textContent = dados.length;
-      restantes.textContent = LIMITE - dados.length;
+
+      contador.textContent =
+        dados.length;
+
+      restantes.textContent =
+        LIMITE - dados.length;
+
 
       if (dados.length >= LIMITE) {
+
         btnEnviar.disabled = true;
-        limiteMsg.textContent = "Limite atingido, para continuar, exporte os dados inseridos até agora.";
+
+        limiteMsg.textContent =
+          "Limite atingido, para continuar, exporte os dados inseridos até agora.";
+
       } else {
+
         btnEnviar.disabled = false;
+
         limiteMsg.textContent = "";
+
       }
+
     }
 
-    // Valida os formatos permitidos e, no formato longo, extrai somente AD...BR.
-function processarCodigoBipado(codigoOriginal) {
-  const codigo = codigoOriginal.trim().toUpperCase();
 
-  // Formato permitido: AD + números + BR
-  // Exemplo: AD987654321BR
-  const formatoAD = /^AD\d+BR$/;
+    /* 
+       PROCESSAMENTO DOS CÓDIGOS
 
-  // Código longo permitido.
-  // O sistema extrai somente o trecho AD...BR.
-  const formatoLongo = /^86755000000058308552001240951AD\d+BR00167300618000000100005CASA\s+0554986755000-00\.000000-00\.000000$/;
+       ACEITA:
 
-  // Código AD normal
-  if (formatoAD.test(codigo)) {
-    return codigo;
-  }
+       AD + 9 números + BR
 
-  // Código longo
-  if (formatoLongo.test(codigo)) {
-    const encontrado = codigo.match(/AD\d+BR/);
-    return encontrado ? encontrado[0] : null;
-  }
+       Exemplo:
+       AD987654321BR
 
-  // Qualquer outro código será recusado
-  return null;
-}
+       TAMBÉM ACEITA O CÓDIGO LONGO
+       E EXTRAI SOMENTE AD...BR.
+    */
+
+    function processarCodigoBipado(codigoOriginal) {
+
+      const codigo =
+        codigoOriginal.trim().toUpperCase();
+
+
+      /* Código AD normal */
+
+      const formatoAD =
+        /^AD\d{9}BR$/;
+
+
+      /*
+        Código longo permitido.
+        Somente o trecho AD...BR será registrado.
+      */
+
+      const formatoLongo =
+        /^86755000000058308552001240951AD\d+BR00167300618000000100005CASA\s+0554986755000-00\.000000-00\.000000$/;
+
+
+      /* Código AD normal */
+
+      if (formatoAD.test(codigo)) {
+
+        return codigo;
+
+      }
+
+
+      /* Código longo */
+
+      if (formatoLongo.test(codigo)) {
+
+        const encontrado =
+          codigo.match(/AD\d+BR/);
+
+        return encontrado
+          ? encontrado[0]
+          : null;
+
+      }
+
+
+      /* Código não permitido */
+
+      return null;
+
+    }
+
+
+    /* MODAL CÓDIGO INCORRETO */
 
     function mostrarCodigoIncorreto(codigo) {
+
       textoCodigoIncorreto.textContent =
         `Código não permitido: ${codigo}. Feche esta mensagem para continuar a auditoria.`;
-      modalCodigoIncorreto.style.display = "flex";
-      setTimeout(() => fecharCodigoIncorreto.focus(), 0);
+
+      modalCodigoIncorreto.style.display =
+        "flex";
+
+      setTimeout(() => {
+
+        fecharCodigoIncorreto.focus();
+
+      }, 0);
+
     }
+
 
     fecharCodigoIncorreto.onclick = () => {
-      modalCodigoIncorreto.style.display = "none";
-      const campoCodigo = document.getElementById("codigo");
+
+      modalCodigoIncorreto.style.display =
+        "none";
+
+      const campoCodigo =
+        document.getElementById("codigo");
+
       campoCodigo.value = "";
+
       campoCodigo.focus();
+
     };
 
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      erroMsg.textContent = "";
 
-      const base = selectBase.value;
-      const setor = selectSetor.value;
-      const codigoBipado = document.getElementById("codigo").value.trim().toUpperCase();
+    /* MODAL CÓDIGO DUPLICADO */
 
-      if (!base || !setor) {
-        erroMsg.textContent = "Por favor, selecione o AUDITOR.";
-        return;
-      }
+    function mostrarCodigoDuplicado(codigo) {
 
-      const codigo = processarCodigoBipado(codigoBipado);
+      textoCodigoDuplicado.textContent =
+        `O código ${codigo} já foi bipado anteriormente.`;
 
-      if (!codigo) {
-        // Não registra o código e bloqueia a continuidade até fechar a mensagem.
-        mostrarCodigoIncorreto(codigoBipado);
-        return;
-      }
+      modalCodigoDuplicado.style.display =
+        "flex";
 
-if (dados.some(d => d.codigo === codigo)) {
-  mostrarCodigoDuplicado(codigo);
-  return;
-}
+      setTimeout(() => {
 
-      if (dados.length >= LIMITE) {
-        erroMsg.textContent = "Limite atingido, não é possível adicionar mais.";
-        return;
-      }
+        fecharCodigoDuplicado.focus();
 
-      const dataHora = new Date().toLocaleString("pt-BR");
-      dados.push({ base, setor, codigo, dataHora });
-      salvarDados();
-      ultimoCodigo.textContent = codigo;
-      document.getElementById("codigo").value = "";
-      salvarUltimosSelects();
-      atualizarUI();
-    });
+      }, 0);
 
-    botaoTabela.onclick = () => {
-      modalTabela.style.display = "flex";
-      form.classList.add("hidden");
-      botaoTabela.classList.add("hidden");
-      botaoExportar.classList.add("hidden");
-      botaoLimpar.classList.add("hidden");
-      document.getElementById("top-info").classList.add("hidden");
-      document.getElementById("rodape").classList.add("hidden");
-      erroMsg.textContent = "";
-      limiteMsg.textContent = "";
-    };
-
-    botaoOcultar.onclick = () => {
-      modalTabela.style.display = "none";
-      form.classList.remove("hidden");
-      botaoTabela.classList.remove("hidden");
-      botaoExportar.classList.remove("hidden");
-      botaoLimpar.classList.remove("hidden");
-      document.getElementById("top-info").classList.remove("hidden");
-      document.getElementById("rodape").classList.remove("hidden");
-    };
-
-    function exportarExcel() {
-      // Separa os códigos no Excel:
-      // CODIGO REDESPACHO = códigos que começam com AD e terminam em BR
-      // CODIGOS TOTAL = todos os demais códigos (ex.: TXAQ...)
-      const codigosRedespacho = dados
-        .map(d => d.codigo)
-        .filter(codigo => /^AD\d+BR$/.test(codigo));
-
-      const codigosTotal = dados
-        .map(d => d.codigo)
-        .filter(codigo => !/^AD\d+BR$/.test(codigo));
-
-      const maiorQuantidade = Math.max(codigosRedespacho.length, codigosTotal.length);
-
-      const linhas = [
-        ["CODIGO REDESPACHO", "CODIGOS TOTAL"],
-        ...Array.from({ length: maiorQuantidade }, (_, i) => [
-          codigosRedespacho[i] || "",
-          codigosTotal[i] || ""
-        ])
-      ];
-
-      const worksheet = XLSX.utils.aoa_to_sheet(linhas);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "INVENTARIO");
-
-      const agora = new Date();
-      const dia = String(agora.getDate()).padStart(2, "0");
-      const mes = String(agora.getMonth() + 1).padStart(2, "0");
-      const ano = agora.getFullYear();
-      const hora = String(agora.getHours()).padStart(2, "0");
-      const minuto = String(agora.getMinutes()).padStart(2, "0");
-      const segundo = String(agora.getSeconds()).padStart(2, "0");
-
-      function formatarTexto(texto) {
-        return texto
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/[^a-zA-Z0-9]/g, "-")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "")
-          .toUpperCase();
-      }
-
-      const baseNome = formatarTexto(selectBase.value || "SEM-BASE");
-      const setorBruto = selectSetor.value || "SEM-SETOR";
-      const setorTexto = setorBruto.split("-").slice(1).join("-").trim(); 
-      const setorNome = formatarTexto(setorTexto);
-
-      const nomeArquivo = `INVENTARIO-${baseNome}-${setorNome}-${dia}-${mes}-${ano}-${hora}h${minuto}m${segundo}s.xlsx`;
-
-      XLSX.writeFile(workbook, nomeArquivo);
     }
 
-    botaoExportar.onclick = () => {
-      confirmacaoExportar.style.display = "flex";
+
+    fecharCodigoDuplicado.onclick = () => {
+
+      modalCodigoDuplicado.style.display =
+        "none";
+
+      const campoCodigo =
+        document.getElementById("codigo");
+
+      campoCodigo.value = "";
+
+      campoCodigo.focus();
+
     };
+
+
+    /* ENVIO / BIPAGEM */
+
+    form.addEventListener("submit", e => {
+
+      e.preventDefault();
+
+      erroMsg.textContent = "";
+
+
+      const base =
+        selectBase.value;
+
+      const setor =
+        selectSetor.value;
+
+      const codigoBipado =
+        document
+          .getElementById("codigo")
+          .value
+          .trim()
+          .toUpperCase();
+
+
+      /* Verificar auditor e fluxo */
+
+      if (!base || !setor) {
+
+        erroMsg.textContent =
+          "Por favor, selecione o AUDITOR e o FLUXO.";
+
+        return;
+
+      }
+
+
+      /* Validar código */
+
+      const codigo =
+        processarCodigoBipado(codigoBipado);
+
+
+      if (!codigo) {
+
+        mostrarCodigoIncorreto(
+          codigoBipado
+        );
+
+        return;
+
+      }
+
+
+      /* Verificar duplicidade */
+
+      if (
+        dados.some(
+          d => d.codigo === codigo
+        )
+      ) {
+
+        mostrarCodigoDuplicado(
+          codigo
+        );
+
+        return;
+
+      }
+
+
+      /* Verificar limite */
+
+      if (dados.length >= LIMITE) {
+
+        erroMsg.textContent =
+          "Limite atingido, não é possível adicionar mais.";
+
+        return;
+
+      }
+
+
+      /* Data e hora */
+
+      const dataHora =
+        new Date().toLocaleString("pt-BR");
+
+
+      /* Adicionar registro */
+
+      dados.push({
+
+        base: base,
+
+        setor: setor,
+
+        codigo: codigo,
+
+        dataHora: dataHora
+
+      });
+
+
+      /* Salvar */
+
+      salvarDados();
+
+
+      /* Mostrar último código */
+
+      ultimoCodigo.textContent =
+        codigo;
+
+
+      /* Limpar campo */
+
+      document.getElementById(
+        "codigo"
+      ).value = "";
+
+
+      /* Salvar auditor e fluxo */
+
+      salvarUltimosSelects();
+
+
+      /* Atualizar tela */
+
+      atualizarUI();
+
+    });
+
+
+    /* ABRIR CONSULTA */
+
+    botaoTabela.onclick = () => {
+
+      modalTabela.style.display =
+        "flex";
+
+      form.classList.add("hidden");
+
+      botaoTabela.classList.add("hidden");
+
+      botaoExportar.classList.add("hidden");
+
+      botaoLimpar.classList.add("hidden");
+
+      document
+        .getElementById("top-info")
+        .classList.add("hidden");
+
+      document
+        .getElementById("rodape")
+        .classList.add("hidden");
+
+      erroMsg.textContent = "";
+
+      limiteMsg.textContent = "";
+
+    };
+
+
+    /* VOLTAR DA CONSULTA */
+
+    botaoOcultar.onclick = () => {
+
+      modalTabela.style.display =
+        "none";
+
+      form.classList.remove("hidden");
+
+      botaoTabela.classList.remove("hidden");
+
+      botaoExportar.classList.remove("hidden");
+
+      botaoLimpar.classList.remove("hidden");
+
+      document
+        .getElementById("top-info")
+        .classList.remove("hidden");
+
+      document
+        .getElementById("rodape")
+        .classList.remove("hidden");
+
+      document
+        .getElementById("codigo")
+        .focus();
+
+    };
+
+
+    /* EXPORTAR EXCEL */
+
+    function exportarExcel() {
+
+      /*
+        Como agora somente códigos AD
+        são aceitos, todos os registros
+        vão para uma única coluna.
+      */
+
+      const linhas = [
+
+        ["CODIGO REDESPACHO"],
+
+        ...dados.map(
+          d => [d.codigo]
+        )
+
+      ];
+
+
+      const worksheet =
+        XLSX.utils.aoa_to_sheet(
+          linhas
+        );
+
+
+      const workbook =
+        XLSX.utils.book_new();
+
+
+      XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "INVENTARIO"
+      );
+
+
+      /* Data e hora */
+
+      const agora =
+        new Date();
+
+      const dia =
+        String(
+          agora.getDate()
+        ).padStart(2, "0");
+
+      const mes =
+        String(
+          agora.getMonth() + 1
+        ).padStart(2, "0");
+
+      const ano =
+        agora.getFullYear();
+
+      const hora =
+        String(
+          agora.getHours()
+        ).padStart(2, "0");
+
+      const minuto =
+        String(
+          agora.getMinutes()
+        ).padStart(2, "0");
+
+      const segundo =
+        String(
+          agora.getSeconds()
+        ).padStart(2, "0");
+
+
+      /* Formatar texto */
+
+      function formatarTexto(texto) {
+
+        return texto
+
+          .normalize("NFD")
+
+          .replace(
+            /[\u0300-\u036f]/g,
+            ""
+          )
+
+          .replace(
+            /[^a-zA-Z0-9]/g,
+            "-"
+          )
+
+          .replace(
+            /-+/g,
+            "-"
+          )
+
+          .replace(
+            /^-|-$/g,
+            ""
+          )
+
+          .toUpperCase();
+
+      }
+
+
+      /* Nome do auditor */
+
+      const baseNome =
+        formatarTexto(
+          selectBase.value ||
+          "SEM-BASE"
+        );
+
+
+      /* Nome do fluxo */
+
+      const setorNome =
+        formatarTexto(
+          selectSetor.value ||
+          "SEM-SETOR"
+        );
+
+
+      /* Nome final do arquivo */
+
+      const nomeArquivo =
+        `INVENTARIO-${baseNome}-${setorNome}-${dia}-${mes}-${ano}-${hora}h${minuto}m${segundo}s.xlsx`;
+
+
+      /* Baixar Excel */
+
+      XLSX.writeFile(
+        workbook,
+        nomeArquivo
+      );
+
+    }
+
+
+    /* BOTÃO EXPORTAR */
+
+    botaoExportar.onclick = () => {
+
+      confirmacaoExportar.style.display =
+        "flex";
+
+    };
+
+
+    /* EXPORTAR DENTRO DA CONSULTA */
 
     botaoExportarModal.onclick = () => {
-      confirmacaoExportar.style.display = "flex";
+
+      confirmacaoExportar.style.display =
+        "flex";
+
     };
+
+
+    /* CONFIRMAR EXPORTAÇÃO */
 
     btnSimExportar.onclick = () => {
+
       exportarExcel();
+
+
+      /* Limpar dados */
+
       dados = [];
+
       salvarDados();
-      ultimoCodigo.textContent = "-";
+
+
+      /* Limpar último código */
+
+      ultimoCodigo.textContent =
+        "-";
+
+
+      /* Limpar auditor e fluxo */
+
       limparUltimosSelects();
+
       carregarUltimosSelects();
+
+
+      /* Atualizar tela */
+
       atualizarUI();
-      confirmacaoExportar.style.display = "none";
+
+
+      /* Fechar confirmação */
+
+      confirmacaoExportar.style.display =
+        "none";
+
     };
+
+
+    /* CANCELAR EXPORTAÇÃO */
 
     btnNaoExportar.onclick = () => {
-      confirmacaoExportar.style.display = "none";
+
+      confirmacaoExportar.style.display =
+        "none";
+
     };
+
+
+    /* BOTÃO LIMPAR */
 
     botaoLimpar.onclick = () => {
-      confirmacaoLimpar.style.display = "flex";
+
+      confirmacaoLimpar.style.display =
+        "flex";
+
     };
+
+
+    /* CONFIRMAR LIMPEZA */
 
     btnSimLimpar.onclick = () => {
+
       dados = [];
+
       salvarDados();
-      ultimoCodigo.textContent = "-";
+
+
+      ultimoCodigo.textContent =
+        "-";
+
+
       limparUltimosSelects();
+
       carregarUltimosSelects();
+
+
       atualizarUI();
-      confirmacaoLimpar.style.display = "none";
+
+
+      confirmacaoLimpar.style.display =
+        "none";
+
     };
+
+
+    /* CANCELAR LIMPEZA */
 
     btnNaoLimpar.onclick = () => {
-      confirmacaoLimpar.style.display = "none";
+
+      confirmacaoLimpar.style.display =
+        "none";
+
     };
 
+
+    /* INICIALIZAÇÃO */
+
     carregarUltimosSelects();
+
     atualizarUI();
+
   </script>
-  <div id="modal-codigo-duplicado">
-  <div>
-    <h3>CÓDIGO JÁ BIPADO</h3>
-    <p id="texto-codigo-duplicado">
-      Este código já foi registrado na auditoria.
-    </p>
-    <button id="fechar-codigo-duplicado">FECHAR</button>
-  </div>
-</div>
+
 </body>
 </html>
