@@ -7,6 +7,47 @@
   <!-- Adiciona a biblioteca SheetJS para gerar Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
+    /* Modal de código duplicado */
+#modal-codigo-duplicado {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.65);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+
+#modal-codigo-duplicado > div {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 420px;
+  width: calc(100% - 40px);
+  box-sizing: border-box;
+  border: 2px solid red;
+}
+
+#modal-codigo-duplicado h3 {
+  color: red;
+  margin-top: 0;
+}
+
+#modal-codigo-duplicado p {
+  font-size: 16px;
+  font-weight: bold;
+  word-break: break-word;
+}
+
+#fechar-codigo-duplicado {
+  margin-top: 10px;
+  width: 140px;
+  background: white;
+}
     body {
       font-family: Arial, sans-serif;
       text-align: center;
@@ -389,9 +430,28 @@
     const fecharCodigoIncorreto = document.getElementById("fechar-codigo-incorreto");
     const selectBase = document.getElementById("base");
     const selectSetor = document.getElementById("setor");
+    const modalCodigoDuplicado = document.getElementById("modal-codigo-duplicado");
+    const textoCodigoDuplicado = document.getElementById("texto-codigo-duplicado");
+    const fecharCodigoDuplicado = document.getElementById("fechar-codigo-duplicado");
 
     const LIMITE = 2500;
     let dados = JSON.parse(localStorage.getItem("dadosInventario") || "[]");
+    function mostrarCodigoDuplicado(codigo) {
+  textoCodigoDuplicado.textContent =
+    `O código ${codigo} já foi bipado anteriormente.`;
+    
+  modalCodigoDuplicado.style.display = "flex";
+
+  setTimeout(() => fecharCodigoDuplicado.focus(), 0);
+}
+
+fecharCodigoDuplicado.onclick = () => {
+  modalCodigoDuplicado.style.display = "none";
+
+  const campoCodigo = document.getElementById("codigo");
+  campoCodigo.value = "";
+  campoCodigo.focus();
+};
 
     function salvarDados() {
       localStorage.setItem("dadosInventario", JSON.stringify(dados));
@@ -502,10 +562,10 @@ function processarCodigoBipado(codigoOriginal) {
         return;
       }
 
-      if (dados.some(d => d.codigo === codigo)) {
-        erroMsg.textContent = "Código já bipado.";
-        return;
-      }
+if (dados.some(d => d.codigo === codigo)) {
+  mostrarCodigoDuplicado(codigo);
+  return;
+}
 
       if (dados.length >= LIMITE) {
         erroMsg.textContent = "Limite atingido, não é possível adicionar mais.";
@@ -641,5 +701,14 @@ function processarCodigoBipado(codigoOriginal) {
     carregarUltimosSelects();
     atualizarUI();
   </script>
+  <div id="modal-codigo-duplicado">
+  <div>
+    <h3>CÓDIGO JÁ BIPADO</h3>
+    <p id="texto-codigo-duplicado">
+      Este código já foi registrado na auditoria.
+    </p>
+    <button id="fechar-codigo-duplicado">FECHAR</button>
+  </div>
+</div>
 </body>
 </html>
