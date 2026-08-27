@@ -441,34 +441,31 @@
     }
 
     // Valida os formatos permitidos e, no formato longo, extrai somente AD...BR.
-    function processarCodigoBipado(codigoOriginal) {
-      const codigo = codigoOriginal.trim().toUpperCase();
+function processarCodigoBipado(codigoOriginal) {
+  const codigo = codigoOriginal.trim().toUpperCase();
 
-      // Formato 1: TXAQ494219298TX
-      const formatoTX = /^TXAQ494219298TX$/;
+  // Formato permitido: AD + números + BR
+  // Exemplo: AD987654321BR
+  const formatoAD = /^AD\d+BR$/;
 
-      // Formato 2: AD789061991BR
-      const formatoAD = /^AD\d+BR$/;
+  // Código longo permitido.
+  // O sistema extrai somente o trecho AD...BR.
+  const formatoLongo = /^86755000000058308552001240951AD\d+BR00167300618000000100005CASA\s+0554986755000-00\.000000-00\.000000$/;
 
-      // Formato 3: código longo que contém AD...BR.
-      // Neste formato, somente o trecho iniciado em AD e terminado em BR é registrado.
-      const formatoLongo = /^86755000000058308552001240951AD\d+BR00167300618000000100005CASA\s+0554986755000-00\.000000-00\.000000$/;
+  // Código AD normal
+  if (formatoAD.test(codigo)) {
+    return codigo;
+  }
 
-      if (formatoTX.test(codigo)) {
-        return codigo;
-      }
+  // Código longo
+  if (formatoLongo.test(codigo)) {
+    const encontrado = codigo.match(/AD\d+BR/);
+    return encontrado ? encontrado[0] : null;
+  }
 
-      if (formatoAD.test(codigo)) {
-        return codigo;
-      }
-
-      if (formatoLongo.test(codigo)) {
-        const encontrado = codigo.match(/AD\d+BR/);
-        return encontrado ? encontrado[0] : null;
-      }
-
-      return null;
-    }
+  // Qualquer outro código será recusado
+  return null;
+}
 
     function mostrarCodigoIncorreto(codigo) {
       textoCodigoIncorreto.textContent =
