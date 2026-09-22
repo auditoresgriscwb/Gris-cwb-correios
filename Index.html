@@ -768,55 +768,24 @@
     */
 
     function processarCodigoBipado(codigoOriginal) {
+  const codigo = codigoOriginal.trim().toUpperCase();
 
-      const codigo =
-        codigoOriginal.trim().toUpperCase();
+  // Procura AD...BR dentro de códigos longos
+  const encontradoAD = codigo.match(/AD\d+BR/);
 
+  // Se encontrou, salva somente o AD...BR
+  if (encontradoAD) {
+    return encontradoAD[0];
+  }
 
-      /* Código AD normal */
+  // Aceita códigos de 9 até 15 caracteres
+  if (codigo.length >= 9 && codigo.length <= 15) {
+    return codigo;
+  }
 
-      const formatoAD =
-        /^AD\d{9}BR$/;
-
-
-      /*
-        Código longo permitido.
-        Somente o trecho AD...BR será registrado.
-      */
-
-      const formatoLongo =
-        /^86755000000058308552001240951AD\d+BR00167300618000000100005CASA\s+0554986755000-00\.000000-00\.000000$/;
-
-
-      /* Código AD normal */
-
-      if (formatoAD.test(codigo)) {
-
-        return codigo;
-
-      }
-
-
-      /* Código longo */
-
-      if (formatoLongo.test(codigo)) {
-
-        const encontrado =
-          codigo.match(/AD\d+BR/);
-
-        return encontrado
-          ? encontrado[0]
-          : null;
-
-      }
-
-
-      /* Código não permitido */
-
-      return null;
-
-    }
-
+  // Fora do limite = inválido
+  return null;
+}
 
     /* MODAL CÓDIGO INCORRETO */
 
